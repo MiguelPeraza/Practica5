@@ -12,6 +12,25 @@ import core.VisitadorClientes;
 
 class ClientesTest {
 
+
+  @Test
+  void testA() {
+    // Caso: Crea el almacen y almacena un cliente, otro distinto y de nuevo el primero
+    // RE  : La primera funciona. La segunda también. La tercera lanza ClientesException
+    //       Sólo están los dos clientes en el almacenamiento
+    ProveedorAlmacenamientoClientesMock proveedor = new ProveedorAlmacenamientoClientesMock();
+    Clientes clientes = new Clientes(proveedor);
+    Cliente cliente = new Cliente("62527456R", "Makako", "Pako", 10, 12345.67, true);
+    Cliente cliente2 = new Cliente("65043932R", "Makaki", "Paqui", 20, 89012.34, false);
+    assertDoesNotThrow(() -> clientes.addCliente(cliente));
+    assertDoesNotThrow(() -> clientes.addCliente(cliente2));
+    assertThrows(ClientesException.class, () -> clientes.addCliente(cliente));
+    // El almacenamiento contiene dos clientes y son nuestros dos clientes
+    assertEquals(2, proveedor.size());
+    assertTrue(proveedor.contains(cliente));
+    assertTrue(proveedor.contains(cliente2));
+  }
+  
   @Test
   void testProveedorOk() {
     // Caso: Prueba a crear el almacén con un proveedor de acceso correcto
@@ -87,23 +106,6 @@ class ClientesTest {
     assertTrue(proveedor.contains(cliente));
   }
 
-  @Test
-  void testAddDosClientesDistintosYUnoRepetido() {
-    // Caso: Crea el almacen y almacena un cliente, otro distinto y de nuevo el primero
-    // RE  : La primera funciona. La segunda también. La tercera lanza ClientesException
-    //       Sólo están los dos clientes en el almacenamiento
-    ProveedorAlmacenamientoClientesMock proveedor = new ProveedorAlmacenamientoClientesMock();
-    Clientes clientes = new Clientes(proveedor);
-    Cliente cliente = new Cliente("62527456R", "Makako", "Pako", 10, 12345.67, true);
-    Cliente cliente2 = new Cliente("65043932R", "Makaki", "Paqui", 20, 89012.34, false);
-    assertDoesNotThrow(() -> clientes.addCliente(cliente));
-    assertDoesNotThrow(() -> clientes.addCliente(cliente2));
-    assertThrows(ClientesException.class, () -> clientes.addCliente(cliente));
-    // El almacenamiento contiene dos clientes y son nuestros dos clientes
-    assertEquals(2, proveedor.size());
-    assertTrue(proveedor.contains(cliente));
-    assertTrue(proveedor.contains(cliente2));
-  }
 
   @Test
   void testAddRemoveAddCliente() {
