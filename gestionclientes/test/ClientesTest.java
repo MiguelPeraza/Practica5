@@ -3,7 +3,12 @@
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
+import core.Cliente;
 import core.Clientes;
+import core.ClientesException;
+import core.ProveedorAlmacenamientoClientes;
+import core.ProveedorAlmacenamientoClientesException;
+import core.VisitadorClientes;
 
 class ClientesTest {
 
@@ -55,6 +60,7 @@ class ClientesTest {
     // Comprueba que contiene el cliente
     assertEquals(1, proveedor.size());
     assertTrue(proveedor.contains(cliente));
+    
   }
 
   @Test
@@ -212,7 +218,6 @@ class ClientesTest {
     contador.cuenta = 0;
     clientes.visita(new VisitadorClientes() {
       
-      @Override
       public void visita(Cliente cliente) {
         contador.cuenta++;
         assertTrue(proveedor.contains(cliente));
