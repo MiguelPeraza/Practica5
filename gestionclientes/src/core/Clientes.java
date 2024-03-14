@@ -92,22 +92,23 @@ public class Clientes {
     for (Cliente cliente : todosLosClientes) {
       if (!cliente.getNif().equals(nif)) {
         clientesActualizados.add(cliente);
-        
-      }else {
+
+      } else {
         clienteActualizado = true;
       }
     }
-    // Sinno se ecuentra ningún cliente con el nif proporcionado salta ClientesException
+    // Sinno se ecuentra ningún cliente con el nif proporcionado salta
+    // ClientesException
     if (!clienteActualizado) {
       throw new ClientesException();
     }
-    
+
     // Crea un array, del tamaño de la lista actualizada con todos los clientes.
     Cliente[] clientesActualizadosArray = new Cliente[clientesActualizados.size()];
     // Pasa los datos de la lista al array
     clientesActualizados.toArray(clientesActualizadosArray);
     proveedorAlmacenamientoClientes.saveAll(clientesActualizadosArray);
-    
+
   }
 
   /*
@@ -135,7 +136,8 @@ public class Clientes {
         clientesActualizados.add(clienteActual);
       }
     }
-    // Sinno se ecuentra ningún cliente con el nif proporcionado salta ClientesException
+    // Sinno se ecuentra ningún cliente con el nif proporcionado salta
+    // ClientesException
     if (!clienteActualizado) {
       throw new ClientesException();
     }
@@ -147,9 +149,15 @@ public class Clientes {
   }
 
   public void visita(VisitadorClientes visitador) {
+    //Verifica que el visitador dado no sea nulo
     if (visitador == null) {
       throw new NullPointerException();
     }
+    //Para cada cliente se aplica el método visita de la clase visitador
+    Cliente[] todosLosClientes = proveedorAlmacenamientoClientes.getAll();
+    for (Cliente cliente : todosLosClientes) {
+      visitador.visita(cliente);
+  }
   }
 
 }
