@@ -18,8 +18,8 @@ public class Clientes {
    */
   public Clientes(ProveedorAlmacenamientoClientes proveedorAlmacenamientoClientes) {
     // Verifica que proveedorAlmacenamientoClientes no sea nulo
-    if (proveedorAlmacenamientoClientes == null) {
-      throw new NullPointerException();
+    if (proveedorAlmacenamientoClientes.equals(null)) {
+      throw new ClientesException();
     }
     this.proveedorAlmacenamientoClientes = proveedorAlmacenamientoClientes;
   }
@@ -149,15 +149,15 @@ public class Clientes {
   }
 
   public void visita(VisitadorClientes visitador) {
-    //Verifica que el visitador dado no sea nulo
+    // Verifica que el visitador dado no sea nulo
     if (visitador == null) {
       throw new NullPointerException();
     }
-    //Para cada cliente se aplica el método visita de la clase visitador
+    // Para cada cliente se aplica el método visita de la clase visitador
     Cliente[] todosLosClientes = proveedorAlmacenamientoClientes.getAll();
     for (Cliente cliente : todosLosClientes) {
       visitador.visita(cliente);
-  }
+    }
   }
 
 }
