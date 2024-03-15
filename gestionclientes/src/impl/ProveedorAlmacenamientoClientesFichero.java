@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
@@ -81,12 +82,21 @@ public class ProveedorAlmacenamientoClientesFichero implements ProveedorAlmacena
         if (linea != null) {
           // Se utiliza split para semapara la linea en datos,ya que estos se separan por
           // una coma, y los añade a un array de string
-          String[] datos = linea.split(",");
-          // Convierte los datos si hay que convertilos y crea el cliente
-          Cliente clientesacado = new Cliente(datos[0], datos[1], datos[2], Integer.parseInt(datos[3]),
-              Double.parseDouble(datos[4]), Boolean.parseBoolean(datos[5]));
-          // añade el cliente al contenedor que va a devolver
-          clientes.add(clientesacado);
+          String[] datos = linea.split(";");
+          int a = datos.length;
+          if (a == 6) {
+            boolean europeo = false;
+            if (datos[5].toLowerCase().equals(" s")) {
+              europeo = true;
+            }
+
+            // Convierte los datos si hay que convertilos y crea el cliente
+            Cliente clientesacado = new Cliente(datos[0], datos[1], datos[2], Integer.parseInt(datos[3]),
+                Double.parseDouble(datos[4]), europeo);
+            // añade el cliente al contenedor que va a devolver
+            clientes.add(clientesacado);
+
+          }
         }
       } while (linea != null);
       flujoTexto.close();
@@ -96,6 +106,7 @@ public class ProveedorAlmacenamientoClientesFichero implements ProveedorAlmacena
       // devuelve un contenedor vacío
       try {
         Files.createFile(ruta);
+        System.out.println("El archivo no existia, ya se ha creado");
       } catch (IOException e1) {
         e1.printStackTrace();
       }
@@ -104,19 +115,19 @@ public class ProveedorAlmacenamientoClientesFichero implements ProveedorAlmacena
     } catch (IOException e) {
       e.printStackTrace();
       return clientes.toArray(new Cliente[0]);
-
     }
+
   }
 
   @Override
   public void saveAll(Cliente[] clientes) {
-    //Entra en el archivo para escribirlo
+    // Entra en el archivo para escribirlo
     try {
       PrintWriter flujoTexto = new PrintWriter(new FileWriter(rutaFichero));
       // De cada cliente que está en el contenedor se sacan los datos y se escriben en
       // el fichero usanfo el formato del printf
       for (Cliente clienteAEscribir : clientes) {
-        flujoTexto.printf("%s, %s, %s, %d, %.2f, %b%n", clienteAEscribir.getNif(), clienteAEscribir.getApellidos(),
+        flujoTexto.printf("%s;%s;%s;%d;%.2f;%b%n", clienteAEscribir.getNif(), clienteAEscribir.getApellidos(),
             clienteAEscribir.getNombre(), clienteAEscribir.getEmpleados(), clienteAEscribir.getFacturacion(),
             clienteAEscribir.isNacionalUe());
       }

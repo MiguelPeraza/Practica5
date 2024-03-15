@@ -157,7 +157,7 @@ public class Clientes {
     Cliente[] todosLosClientes = proveedorAlmacenamientoClientes.getAll();
     for (Cliente cliente : todosLosClientes) {
       visitador.visita(cliente);
-      System.out.printf("NIF: %s, Apellidos: %s, Nombre: %s, Empleados: %d, Facturación: %.2f, Europeo: %b%n", cliente.getNif(), cliente.getApellidos(), cliente.getNombre(), cliente.getEmpleados(), cliente.getFacturacion(), cliente.isNacionalUe());
+      System.out.printf("%s: %s, %s%n", cliente.getNif(), cliente.getApellidos(), cliente.getNombre());
     }
   }
 
