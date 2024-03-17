@@ -1,3 +1,4 @@
+
 package impl;
 
 import java.io.BufferedReader;
@@ -89,10 +90,11 @@ public class ProveedorAlmacenamientoClientesFichero implements ProveedorAlmacena
             if (datos[5].toLowerCase().equals(" s")) {
               europeo = true;
             }
-
+            
+            String cadenaConPuntos = datos[4].replace(',', '.');
             // Convierte los datos si hay que convertilos y crea el cliente
             Cliente clientesacado = new Cliente(datos[0], datos[1], datos[2], Integer.parseInt(datos[3]),
-                Double.parseDouble(datos[4]), europeo);
+                Double.parseDouble(cadenaConPuntos), europeo);
             // añade el cliente al contenedor que va a devolver
             clientes.add(clientesacado);
 
@@ -108,7 +110,13 @@ public class ProveedorAlmacenamientoClientesFichero implements ProveedorAlmacena
         Files.createFile(ruta);
         System.out.println("El archivo no existia, ya se ha creado");
       } catch (IOException e1) {
-        e1.printStackTrace();
+        try {
+          Files.createFile(ruta);
+        } catch (IOException e2) {
+          // TODO Auto-generated catch block
+          e2.printStackTrace();
+        }
+        System.out.println("El archivo no existia, ya se ha creado");
       }
       return clientes.toArray(new Cliente[0]);
 
@@ -118,6 +126,8 @@ public class ProveedorAlmacenamientoClientesFichero implements ProveedorAlmacena
     }
 
   }
+
+  
 
   @Override
   public void saveAll(Cliente[] clientes) {

@@ -1,29 +1,30 @@
 package consola;
 
 import java.io.IOException;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 import core.Cliente;
 import core.Clientes;
+import core.ClientesException;
 import core.VisitadorClientes;
 import impl.ProveedorAlmacenamientoClientesFichero;
 
 public class GestionClientesConsolaApp {
 
-  private static final String ARCHIVO = "biblioteca.xml";
-
+  private static final String ARCHIVO = "Clientes.dat";
 
   public GestionClientesConsolaApp() {
 
   }
 
   public static void main(String[] args) {
-    // Obtenemos los usuarios
+
     Scanner sc = new Scanner(System.in);
     // Creamos un objeto de la clase
     GestionClientesConsolaApp app = new GestionClientesConsolaApp();
     // Inicializamos la opción elegida a un valor invalido
-    int opcion =  - 1;
+    int opcion = -1;
     // Mientras no se elija una opción correcta
     do {
       // Mostramos el menu
@@ -35,9 +36,9 @@ public class GestionClientesConsolaApp {
       System.out.println("3. Editar un cliente");
       System.out.println("4. Eliminar un cliente");
       System.out.println("0. Salir del programa");
-      System.out.print("Elija una opción ( 0 - 4 ): ");
+      System.out.println("Elija una opción ( 0 - 4 ): ");
       try {
-        opcion = Integer.parseInt(sc.next());
+        opcion = Integer.parseInt(sc.nextLine());
         // Si la opción está en rango se devuelve. Si no se muestra error y se da otra
         // vuelta
         if (opcion >= 0 && opcion <= 4) {
@@ -60,71 +61,96 @@ public class GestionClientesConsolaApp {
           System.out.println("Opción elegida incorrecta. Debe introducir un número comprendido entre ( 0 - 4 )");
         }
       } catch (NumberFormatException e) {
-        e.printStackTrace();
+        System.out.println("Opción elegida incorrecta. Debe introducir un número comprendido entre ( 0 - 4 )");
       }
-    }while (opcion!=0);
+    } while (opcion != 0);
+    sc.close();
   }
 
+  /*
+   * Método eliminar: Este método se encarga de elminar del archivo la información
+   * del cliente del que se provee el dni
+   */
   private void eliminar() {
     System.out.println("ELIMINAR CLIENTE");
     System.out.println("--------------");
     Scanner sc = new Scanner(System.in);
+    // Se pide el dni al usuario
     System.out.println("NIF del cliente a eliminar (8 números y la letra debe ser mayúscula)");
     String nif = sc.nextLine();
     try {
-      ProveedorAlmacenamientoClientesFichero proveedor = new ProveedorAlmacenamientoClientesFichero("C:\\Users\\Alumnado\\Desktop\\Ejemplo.dat");
-      Clientes almacen = new Clientes(proveedor); 
+      // Se saca la infomación del archivo
+      ProveedorAlmacenamientoClientesFichero proveedor = new ProveedorAlmacenamientoClientesFichero(
+          "C:\\Users\\maper\\OneDrive\\Escritorio\\Clientes.dat");
+      Clientes almacen = new Clientes(proveedor);
+      // Se utiliza el método removeClente para eliminar el cliente del archivo
       almacen.removeCliente(nif);
-      
+      System.out.println("Operación realizada con éxito");
+
     } catch (IOException e) {
-      System.out.println("No se ha encontrado al cliente");
+      // Se lanza si no se encuentra el archivo
+      System.out.println("No se ha encontrado el archivo, liste los clientes para crearlo");
+    } catch (ClientesException e) {
+      // Se lanza si no se encuentra el cliente
+      System.out.println("No se ha encontrado e cliente");
     }
-    sc.close();
+
   }
 
   private void actualizar() {
-    
+
     System.out.println("EDITAR CLIENTE");
     System.out.println("--------------");
     Scanner sc = new Scanner(System.in);
+    // Se pide el dni del cliente
     System.out.println("NIF del cliente a eliminar (8 números y la letra debe ser mayúscula)");
     String nif = sc.nextLine();
-    boolean nacionalidad = true;
+    // Saca la información del archivo
     try {
-      ProveedorAlmacenamientoClientesFichero proveedor = new ProveedorAlmacenamientoClientesFichero("C:\\Users\\Alumnado\\Desktop\\Ejemplo.dat");
-      Clientes almacen = new Clientes(proveedor); 
-      Cliente a = almacen.getByNif(nif); 
-      nacionalidad = a.isNacionalUe();
-      almacen.removeCliente(nif);
-      
-      
-    } catch (IOException e) {
-      System.out.println("No se ha encontrado al cliente");
-    }
-    try {
-      ProveedorAlmacenamientoClientesFichero proveedor = new ProveedorAlmacenamientoClientesFichero("C:\\Users\\Alumnado\\Desktop\\Ejemplo.dat");
-      Clientes almacen = new Clientes(proveedor); 
+      ProveedorAlmacenamientoClientesFichero proveedor = new ProveedorAlmacenamientoClientesFichero(
+          "C:\\Users\\maper\\OneDrive\\Escritorio\\Clientes.dat");
+      Clientes almacen = new Clientes(proveedor);
+      // Se le piden al usuario para editarlo
       System.out.println("Introduzca los datos del cliente");
       System.out.print("Nombre (Primera letra de cada palabra en mayúscula)");
       String nombre = sc.nextLine();
       System.out.print("Apellidos (Primera letra de cada palabra en mayúscula)");
       String apellido = sc.nextLine();
       System.out.print("Numero de empledos(Entero mayor que cero)");
-      int empleados = sc.nextInt();
+      int empleados = Integer.parseInt(sc.nextLine());
       System.out.print("Facturación (valor real superior mayor que cero)");
-      double facturacion = sc.nextDouble();
-      
-      
-      Cliente cliente = new Cliente(nif,apellido,nombre,empleados,facturacion,nacionalidad);
-      almacen.addCliente(cliente);
-      
-      
-      }catch (IllegalArgumentException e) {
-        System.out.print("Ha introducido un dato erroneo");
-      } catch (IOException e) {
-      e.printStackTrace();
+      double facturacion = Double.parseDouble(sc.nextLine());
+      System.out.println("¿Es de nacionalidad europea? (s/n)");
+      String europeo = sc.nextLine();
+      boolean europeoSiNo = false;
+
+      if (europeo.toLowerCase().equals("s")) {
+        europeoSiNo = true;
+      } else if (europeo.toLowerCase().equals("n")) {
+        europeoSiNo = false;
+      } else {
+        throw new IllegalArgumentException();
+      }
+      // Se crea el cliente que se va a actualizar
+      Cliente cliente1 = new Cliente(nif, apellido, nombre, empleados, facturacion, europeoSiNo);
+      // Con el método updateCliente actualizamos el cliente
+      almacen.updateCliente(cliente1);
+      System.out.println("Operación realizada con éxito");
+    } catch (IllegalArgumentException e) {
+      // Se lanza si el dni es incorrecto
+      System.out.println("Hay un dato mal introducido");
+    } catch (IOException e) {
+      // Se lanza si no se encuentra el archivo
+      System.out.println("No se ha encontrado el archivo, liste los clientes para crearlo");
+    } catch (ClientesException e) {
+      // Se lanza si el dni es incorrecto
+      System.out.println("El dni es incorrecto");
+
+    } catch (NullPointerException e) {
+      // Se lanza si hay algún dato null
+      System.out.println("Ningún campo debe ser null");
+
     }
-    System.out.println("Operación realizada con éxito");
   }
 
   private void añadir() {
@@ -133,45 +159,51 @@ public class GestionClientesConsolaApp {
     System.out.println("AÑADIR CLIENTE");
     System.out.println("--------------");
     try {
-      proveedor = new ProveedorAlmacenamientoClientesFichero("C:\\Users\\Alumnado\\Desktop\\Ejemplo.dat");
+      // Saca la información del archivo
+      proveedor = new ProveedorAlmacenamientoClientesFichero("C:\\Users\\maper\\OneDrive\\Escritorio\\Clientes.dat");
+      Clientes almacen = new Clientes(proveedor);
+
       try {
-      Clientes almacen = new Clientes(proveedor); 
-      System.out.println("Introduzca los datos del cliente");
-      System.out.println("NIF (8 números y la letra debe ser mayúscula)");
-      String nif = sc.nextLine();
-      System.out.print("Nombre (Primera letra de cada palabra en mayúscula)");
-      String nombre = sc.nextLine();
-      System.out.print("Apellidos (Primera letra de cada palabra en mayúscula)");
-      String apellido = sc.nextLine();
-      System.out.print("Numero de empledos(Entero mayor que cero)");
-      int empleados = sc.nextInt();
-      System.out.print("Facturación (valor real superior mayor que cero)");
-      double facturacion = sc.nextDouble();
-      System.out.println("¿Es de nacionalidad europea? (s/n)");
-      String europeo = sc.next();
-      boolean europeoSiNo = false;
-      
-      if (europeo.toLowerCase().equals("s")) {
-        europeoSiNo = true;
-      }else if(europeo.toLowerCase().equals("n")){
-        europeoSiNo = false;
-      }else {
-        throw new IllegalArgumentException();
-      }
-      
-      Cliente cliente = new Cliente(nif,apellido,nombre,empleados,facturacion,europeoSiNo);
-      almacen.addCliente(cliente);
-      System.out.println("Operación realizada con éxito");
-      }catch (IllegalArgumentException e) {
+     // Se le piden al usuario los datos
+        System.out.println("Introduzca los datos del cliente");
+        System.out.println("NIF (8 números y la letra debe ser mayúscula)");
+        String nif = sc.nextLine();
+        System.out.print("Nombre (Primera letra de cada palabra en mayúscula)");
+        String nombre = sc.nextLine();
+        System.out.print("Apellidos (Primera letra de cada palabra en mayúscula)");
+        String apellido = sc.nextLine();
+        System.out.print("Numero de empledos(Entero mayor que cero)");
+        int empleados = sc.nextInt();
+        System.out.print("Facturación (valor real superior mayor que cero)");
+        double facturacion = sc.nextDouble();
+        System.out.println("¿Es de nacionalidad europea? (s/n)");
+        String europeo = sc.next();
+        boolean europeoSiNo = false;
+
+        if (europeo.toLowerCase().equals("s")) {
+          europeoSiNo = true;
+        } else if (europeo.toLowerCase().equals("n")) {
+          europeoSiNo = false;
+        } else {
+          throw new IllegalArgumentException();
+        }
+        // Crea y añade el cliente al archivo
+        Cliente cliente = new Cliente(nif, apellido, nombre, empleados, facturacion, europeoSiNo);
+        almacen.addCliente(cliente);
+        System.out.println("Operación realizada con éxito");
+      } catch (IllegalArgumentException e) {
+        // Se lanza si el dni es incorrecto
         System.out.print("Ha introducido un dato erroneo");
-        
+
+      } catch (ClientesException e) {
+        // Se lanza si el dni esta repetido
+        System.out.print("Ha introducido un dni repetido");
+
       }
-      
-      } catch (IOException e) {
+
+    } catch (IOException e) {
       e.printStackTrace();
     }
-   
-    sc.close();
 
   }
 
@@ -179,20 +211,21 @@ public class GestionClientesConsolaApp {
     System.out.println("LISTAR CLIENTE");
     System.out.println("--------------");
     try {
-      ProveedorAlmacenamientoClientesFichero proveedor = new ProveedorAlmacenamientoClientesFichero("C:\\Users\\Alumnado\\Desktop\\Ejemplo.dat");
-      Clientes almacen = new Clientes(proveedor); 
-      
-      almacen.visita(new VisitadorClientes(){
+      // Saca la información del fichero
+      ProveedorAlmacenamientoClientesFichero proveedor = new ProveedorAlmacenamientoClientesFichero(
+          "C:\\Users\\maper\\OneDrive\\Escritorio\\Clientes.dat");
+      Clientes almacen = new Clientes(proveedor);
 
+      almacen.visita(new VisitadorClientes() {
+        // Usando el visitador se escriben los datos en el fichero
         @Override
         public void visita(Cliente cliente) {
-          // TODO Auto-generated method stub       
+
         }
-             
+
       });
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      System.out.println("La ruta del archivo es incorrecta");
     }
 
   }

@@ -18,9 +18,7 @@ public class Clientes {
    */
   public Clientes(ProveedorAlmacenamientoClientes proveedorAlmacenamientoClientes) {
     // Verifica que proveedorAlmacenamientoClientes no sea nulo
-    if (proveedorAlmacenamientoClientes.equals(null)) {
-      throw new ClientesException();
-    }
+    
     this.proveedorAlmacenamientoClientes = proveedorAlmacenamientoClientes;
   }
 
@@ -29,27 +27,40 @@ public class Clientes {
    * proovedorAlmacenamientoClientes los clientes
    */
   public void addCliente(Cliente cliente) {
-    // Verifica que cliente no sea nulo para poder usar el método
+    // Verifica que el nif dado no sea nulo
     if (cliente == null) {
       throw new NullPointerException();
     }
-    // Verifica si existe algun cliente contiene el dni del cliente ya qie los dni
-    // son únicos por lo que solo puede haber uno
-    Cliente clienteExistente = getByNif(cliente.getNif());
-    if (clienteExistente != null) {
+   
+    // Saca los clientes desde proveedorAlmacenamientoClientes
+    Cliente[] todosLosClientes = proveedorAlmacenamientoClientes.getAll();
+    int a = todosLosClientes.length;
+    List<Cliente> clientesActualizados = new ArrayList<>();
+Boolean coincide = false;
+    // Añade a la lista todos los clientes anteriormente gurdados
+    for (Cliente cliente1 : todosLosClientes) {
+      
+      if(cliente.getNif().equals(cliente1.getNif())) {
+        coincide = true; 
+      }else {
+        
+        clientesActualizados.add(cliente1); 
+      }
+      
+    }
+    if (coincide.equals(false)) {
+   // Añade al cliente nuevo a la lista
+      clientesActualizados.add(cliente);
+    }else {
       throw new ClientesException();
     }
+    
+    // Crea un array, del tamaño de la lista nueva con todos los clientes.
+    Cliente[] clientesActualizadosArray = new Cliente[clientesActualizados.size()];
+    // Pasa los datos de la lista al array
+    clientesActualizados.toArray(clientesActualizadosArray);
+    proveedorAlmacenamientoClientes.saveAll(clientesActualizadosArray);
 
-    Cliente[] todosLosClientes = proveedorAlmacenamientoClientes.getAll();
-    Cliente[] nuevo = new Cliente[todosLosClientes.length + 1];
-    // Añade todos los cliente que esten almacenados en
-    // proveedorAlmacenamientoClientes al nuevo contenedor
-    for (int i = 0; i < todosLosClientes.length; i++) {
-      nuevo[i] = todosLosClientes[i];
-    }
-    // Añade el nuevo cliente al contenedor
-    nuevo[nuevo.length - 1] = cliente;
-    proveedorAlmacenamientoClientes.saveAll(nuevo);
   }
 
   /*

@@ -57,7 +57,7 @@ public class Cliente {
     }
     // Verifica que nif sea correcto,inclutyendo la letra, además de que no sea nulo
     // ni esté vacío
-    if (nif == null || nif.trim().isEmpty() || !validarDni(nif)) {
+    if (nif == null || nif.trim().isEmpty() || !validarNif(nif)) {
       throw new IllegalArgumentException();
     }
     // Verifica que facturación sea mayor que cero
@@ -182,7 +182,7 @@ public class Cliente {
    * 
    * @return Verifica si el dni es un dni valido
    */
-  private boolean validarDni(String nif) {
+  private boolean validarNif(String nif) {
     String patronDNI = "\\d{8}[a-zA-Z]";
     // Se valida el patrón
     Pattern pattern = Pattern.compile(patronDNI);
